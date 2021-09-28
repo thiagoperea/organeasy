@@ -17,7 +17,7 @@ class _HomePageState extends State<HomePage> {
 
   final List<Widget> _appPages = [
     const DashboardPage(),
-    const TransactionsPage(),
+    TransactionsPage(),
     const SettingsPage(),
   ];
 
@@ -55,15 +55,12 @@ class _HomePageState extends State<HomePage> {
         ),
       ),
       body: SafeArea(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+        child: Stack(
           children: [
+            _appPages[_pageIndex],
             IconButton(
               onPressed: () => _onHamburgerTap(),
               icon: const Icon(Icons.menu),
-            ),
-            Expanded(
-              child: _appPages[_pageIndex],
             ),
           ],
         ),
