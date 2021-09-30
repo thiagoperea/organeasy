@@ -11,9 +11,9 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey();
-
   int _pageIndex = 0;
+
+  final List<String> _pageTitles = ["Dashboard", "Transactions", "Settings"];
 
   final List<Widget> _appPages = [
     const DashboardPage(),
@@ -24,7 +24,7 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      key: _scaffoldKey,
+      appBar: AppBar(title: Text(_pageTitles[_pageIndex])),
       drawer: Drawer(
         child: ListView(
           padding: EdgeInsets.zero,
@@ -33,38 +33,31 @@ class _HomePageState extends State<HomePage> {
               decoration: BoxDecoration(color: Colors.blue),
               child: Text(
                 'Drawer Header',
-                style: TextStyle(color: Colors.white, fontSize: 24),
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 24,
+                ),
               ),
             ),
             ListTile(
               leading: const Icon(Icons.dashboard_rounded),
-              title: const Text('Dashboard'),
+              title: Text(_pageTitles[0]),
               onTap: () => _onDrawerTap(0),
             ),
             ListTile(
               leading: const Icon(Icons.playlist_add_rounded),
-              title: const Text('Transactions'),
+              title: Text(_pageTitles[1]),
               onTap: () => _onDrawerTap(1),
             ),
             ListTile(
               leading: const Icon(Icons.settings),
-              title: const Text('Settings'),
+              title: Text(_pageTitles[2]),
               onTap: () => _onDrawerTap(2),
             ),
           ],
         ),
       ),
-      body: SafeArea(
-        child: Stack(
-          children: [
-            _appPages[_pageIndex],
-            IconButton(
-              onPressed: () => _onHamburgerTap(),
-              icon: const Icon(Icons.menu),
-            ),
-          ],
-        ),
-      ),
+      body: _appPages[_pageIndex],
     );
   }
 
@@ -75,6 +68,4 @@ class _HomePageState extends State<HomePage> {
 
     Navigator.of(context).pop();
   }
-
-  void _onHamburgerTap() => _scaffoldKey.currentState?.openDrawer();
 }

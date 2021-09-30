@@ -4,6 +4,7 @@ import 'package:flutter/painting.dart';
 import 'package:flutter/widgets.dart';
 import 'package:intl/intl.dart';
 import 'package:organeasy/data/model/transaction_data.dart';
+import 'package:organeasy/presentation/new_transaction/new_transaction_page.dart';
 
 class TransactionsPage extends StatelessWidget {
   TransactionsPage({Key? key}) : super(key: key);
@@ -12,6 +13,7 @@ class TransactionsPage extends StatelessWidget {
     TransactionData(
       walletId: 0,
       transactionType: TransactionType.receive.index,
+      categoryId: 0,
       description: "Teste",
       dueDate: DateTime.now(),
       value: 100.0,
@@ -20,6 +22,7 @@ class TransactionsPage extends StatelessWidget {
     TransactionData(
         walletId: 0,
         transactionType: TransactionType.pay.index,
+        categoryId: 1,
         description: "Teste ontem",
         dueDate: DateTime.now().add(Duration(days: -1)),
         value: 200.0,
@@ -27,6 +30,7 @@ class TransactionsPage extends StatelessWidget {
     TransactionData(
       walletId: 0,
       transactionType: TransactionType.save.index,
+      categoryId: 2,
       description: "Teste poup",
       dueDate: DateTime.now(),
       value: 50.0,
@@ -40,15 +44,16 @@ class TransactionsPage extends StatelessWidget {
       body: Column(
         mainAxisSize: MainAxisSize.max,
         children: [
-          SizedBox(height: 12),
-          Text(
-            "Transactions",
-            style: TextStyle(
-              fontSize: 20,
-              fontWeight: FontWeight.bold,
+          Container(
+            padding: EdgeInsets.all(8),
+            alignment: Alignment.center,
+            width: double.maxFinite,
+            color: Colors.amber,
+            child: Text(
+              "FILTER VIEW!!!",
+              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
             ),
           ),
-          SizedBox(height: 12),
           Expanded(
             child: ListView.builder(
               itemCount: _mockItems.length,
@@ -61,11 +66,35 @@ class TransactionsPage extends StatelessWidget {
           ),
         ],
       ),
-      floatingActionButton: FloatingActionButton(
-        child: const Icon(Icons.add),
-        onPressed: () {},
+      floatingActionButton: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          FloatingActionButton(
+            heroTag: 0,
+            onPressed: () {},
+            child: Icon(Icons.playlist_add_rounded),
+            mini: true,
+            tooltip: "Add Multiple",
+          ),
+          SizedBox(height: 8),
+          FloatingActionButton(
+            heroTag: 1,
+            onPressed: () => _onAddSingleClick(context),
+            child: Icon(Icons.add_rounded),
+            mini: true,
+            tooltip: "Add single",
+          ),
+        ],
       ),
     );
+  }
+
+  Future<void> _onAddSingleClick(BuildContext context) async {
+    bool wasCreated = await Navigator.of(context).push<bool>(MaterialPageRoute(builder: (_) => NewTransactionPage())) ?? false;
+
+    if (wasCreated) {
+      // ! TODO: call cubit to update screen
+    }
   }
 }
 
@@ -93,7 +122,7 @@ class _TransactionItem extends StatelessWidget {
             SizedBox(width: 16),
             Expanded(
               child: Text(
-                "R\$ ${data.value}",
+                NumberFormat.simpleCurrency().format(data.value),
                 textAlign: TextAlign.end,
                 style: TextStyle(
                   fontSize: 16,

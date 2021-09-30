@@ -12,7 +12,7 @@ class TransactionData extends HiveObject {
   //   var categoryId: Int? = null,
   //   var objectiveId: Int? = null,
   final int transactionType;
-  final int? categoryId;
+  final int categoryId;
   final int? objectiveId;
 
   //   var description: String,
@@ -27,7 +27,7 @@ class TransactionData extends HiveObject {
   TransactionData({
     required this.walletId,
     required this.transactionType,
-    this.categoryId,
+    required this.categoryId,
     this.objectiveId,
     required this.description,
     required this.dueDate,
@@ -89,7 +89,14 @@ class TransactionData extends HiveObject {
 
   @override
   String toString() {
-    return 'TransactionData(walletId: $walletId, transactionType: $transactionType, categoryId: $categoryId, objectiveId: $objectiveId, description: $description, dueDate: $dueDate, value: $value, isDone: $isDone)';
+    return "TransactionData(walletId: $walletId, "
+        "transactionType: ${TransactionType.values[transactionType]}, "
+        "categoryId: $categoryId, "
+        "objectiveId: $objectiveId, "
+        "description: $description, "
+        "dueDate: $dueDate, "
+        "value: $value, "
+        "isDone: $isDone)";
   }
 }
 
