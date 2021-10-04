@@ -4,6 +4,7 @@ import 'package:flutter/widgets.dart';
 import 'package:intl/intl.dart';
 
 import 'package:organeasy/data/model/category_data.dart';
+import 'package:organeasy/data/model/goal_data.dart';
 import 'package:organeasy/internal/money_mask.dart';
 
 class NewTransactionPage extends StatefulWidget {
@@ -16,14 +17,24 @@ class NewTransactionPage extends StatefulWidget {
 class _NewTransactionPageState extends State<NewTransactionPage> {
   // ! TODO: THIS WILL BE RETRIEVED FROM BLOC
   final _categoryList = [
-    CategoryData(id: 0, description: "Receitas"),
+    CategoryData(id: 0, description: "Receita"),
     CategoryData(id: 1, description: "Aposentadoria"),
     CategoryData(id: 2, description: "Reserva de Emergência"),
-    CategoryData(id: 3, description: "Necessidades"),
+    CategoryData(id: 3, description: "Necessidade"),
     CategoryData(id: 4, description: "Lazer"),
     CategoryData(id: 5, description: "Doação"),
+    CategoryData(id: 1337, description: "Objetivo"),
   ];
+
+  final _goalsList = [
+    GoalData(id: 0, description: "Casa", dueDate: DateTime.now(), goalValue: 20000.00, currentValue: 500.00),
+    GoalData(id: 1, description: "Carro", dueDate: DateTime.now(), goalValue: 1000.00, currentValue: 700.00),
+    GoalData(id: 2, description: "Computador", dueDate: DateTime.now(), goalValue: 5000.00, currentValue: 1500.00),
+  ];
+
   int? _categorySelectedKey;
+  int? _goalSelectedKey;
+  bool _isGoalSelected = false;
 
   final TextEditingController _dateController = TextEditingController(text: DateFormat.yMd().format(DateTime.now()));
   final TextEditingController _valueController = TextEditingController(text: NumberFormat.simpleCurrency().format(0.0));
@@ -38,8 +49,12 @@ class _NewTransactionPageState extends State<NewTransactionPage> {
           IconButton(
             icon: const Icon(Icons.check_rounded),
             onPressed: () {
-              _formKey.currentState?.validate();
-              // ! TODO: SAVE TRANSACTION
+              bool? isValid = _formKey.currentState?.validate();
+
+              if (isValid != null && isValid == true) {
+                // ! TODO: SAVE TRANSACTION
+                ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("OK PRA SALVAR!")));
+              }
             },
           ),
         ],
@@ -52,6 +67,8 @@ class _NewTransactionPageState extends State<NewTransactionPage> {
             children: [
               _categoryDropdownField(),
               SizedBox(height: 16),
+              Visibility(child: _goalField(), visible: _isGoalSelected),
+              Visibility(child: SizedBox(height: 16), visible: _isGoalSelected),
               _descriptionField(),
               SizedBox(height: 16),
               _datePickerField(),
@@ -102,9 +119,40 @@ class _NewTransactionPageState extends State<NewTransactionPage> {
           hintText: "Selecione a categoria",
           border: OutlineInputBorder(),
         ),
-        items: _categoryList.map<DropdownMenuItem<int>>((entry) => DropdownMenuItem(value: entry.id, child: Text(entry.description))).toList(),
+        items: _categoryList.map((entry) => DropdownMenuItem(value: entry.id, child: Text(entry.description))).toList(),
         value: _categorySelectedKey,
-        onChanged: (newValue) => _categorySelectedKey = newValue,
+        onChanged: (newValue) {
+          // ! TODO: THIS IS A FUNCTION!!!
+          _categorySelectedKey = newValue;
+
+          bool isGoal = false;
+          if (newValue == 1337) {
+            isGoal = true;
+          }
+
+          if (isGoal != _isGoalSelected) {
+            setState(() {
+              _isGoalSelected = isGoal;
+            });
+          }
+        },
+        validator: (currentValue) {
+          if (currentValue == null) {
+            return "Campo obrigatório";
+          }
+          return null;
+        },
+      );
+
+  Widget _goalField() => DropdownButtonFormField<int>(
+        autovalidateMode: AutovalidateMode.onUserInteraction,
+        decoration: InputDecoration(
+          labelText: "Objetivo",
+          hintText: "Selecione o objetivo",
+          border: OutlineInputBorder(),
+        ),
+        items: _goalsList.map((entry) => DropdownMenuItem(value: entry.id, child: Text(entry.description))).toList(),
+        onChanged: (newValue) => _goalSelectedKey = newValue,
         validator: (currentValue) {
           if (currentValue == null) {
             return "Campo obrigatório";
