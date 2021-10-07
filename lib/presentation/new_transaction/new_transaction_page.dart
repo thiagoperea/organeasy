@@ -1,14 +1,8 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
-import 'package:organeasy/data/model/category_data.dart';
-import 'package:organeasy/data/model/goal_data.dart';
-import 'package:organeasy/data/model/transaction_data.dart';
-
-import 'package:organeasy/internal/money_mask.dart';
-import 'package:organeasy/internal/string_extensions.dart';
 import 'package:organeasy/presentation/new_transaction/cubit/new_transaction_cubit.dart';
 import 'package:organeasy/presentation/new_transaction/views/category_dropdown.dart';
 import 'package:organeasy/presentation/new_transaction/views/description_field.dart';
@@ -79,13 +73,13 @@ class _NewTransactionPageState extends State<NewTransactionPage> {
                       ),
                       SizedBox(height: 16),
                       CategoryDropdown(
-                        categoryList: _cubit.getCategoryList(),
+                        categoryList: _cubit.categoryList,
                         onValueChanged: (newValue) => _onCategoryValueChanged(newValue),
                       ),
                       SizedBox(height: 16),
                       Visibility(
                         child: GoalDropdown(
-                          goalsList: _cubit.getGoalList(),
+                          goalsList: _cubit.goalsList,
                           onValueChanged: (newValue) => _goalSelected,
                         ),
                         visible: _isGoalSelected,
@@ -132,12 +126,26 @@ class _NewTransactionPageState extends State<NewTransactionPage> {
 
   _doOnStateChanged(BuildContext context, NewTransactionState state) {
     if (state is SavingTransaction) {
-      // ! TODO: show dialog
+      showDialog(
+        context: context,
+        builder: (context) => AlertDialog(
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              CircularProgressIndicator(),
+              SizedBox(height: 8),
+              Text("Salvando transação..."),
+            ],
+          ),
+        ),
+      );
       return;
     }
 
     if (state is TransactionSaved) {
       // ! TODO: remove dialog, show success, return to screen
+      Navigator.pop(context);
       return;
     }
 
