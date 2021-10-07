@@ -1,8 +1,10 @@
 import 'package:bloc/bloc.dart';
+import 'package:flutter/foundation.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:intl/intl.dart';
 import 'package:meta/meta.dart';
+import 'package:organeasy/internal/simple_bloc_observer.dart';
 
 part 'splash_state.dart';
 
@@ -18,6 +20,11 @@ class SplashCubit extends Cubit<SplashState> {
     // load locale files
     Intl.defaultLocale = "pt_BR";
     await initializeDateFormatting();
+
+     if (kDebugMode) {
+      Bloc.observer = SimpleBlocObserver();
+    }
+
 
     emit(SplashLoaded());
   }

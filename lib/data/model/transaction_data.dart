@@ -3,22 +3,12 @@ import 'dart:convert';
 import 'package:hive/hive.dart';
 
 class TransactionData extends HiveObject {
-  //   val transactionId: Int = 0,
-  //   val userId: String,
-  //   val walletId: Int,
-  final int walletId;
 
-  //   var transactionType: Int,
-  //   var categoryId: Int? = null,
-  //   var objectiveId: Int? = null,
+  final int walletId;
+  
   final int transactionType;
   final int categoryId;
-  final int? objectiveId;
-
-  //   var description: String,
-  //   var dueDate: Date,
-  //   var totalValue: Double,
-  //   var isDone: Boolean
+  final int? goalId;
   final String description;
   final DateTime dueDate;
   final double value;
@@ -28,7 +18,7 @@ class TransactionData extends HiveObject {
     required this.walletId,
     required this.transactionType,
     required this.categoryId,
-    this.objectiveId,
+    this.goalId,
     required this.description,
     required this.dueDate,
     required this.value,
@@ -39,7 +29,7 @@ class TransactionData extends HiveObject {
     int? walletId,
     int? transactionType,
     int? categoryId,
-    int? objectiveId,
+    int? goalId,
     String? description,
     DateTime? dueDate,
     double? value,
@@ -49,7 +39,7 @@ class TransactionData extends HiveObject {
       walletId: walletId ?? this.walletId,
       transactionType: transactionType ?? this.transactionType,
       categoryId: categoryId ?? this.categoryId,
-      objectiveId: objectiveId ?? this.objectiveId,
+      goalId: goalId ?? this.goalId,
       description: description ?? this.description,
       dueDate: dueDate ?? this.dueDate,
       value: value ?? this.value,
@@ -62,7 +52,7 @@ class TransactionData extends HiveObject {
       'walletId': walletId,
       'transactionType': transactionType,
       'categoryId': categoryId,
-      'objectiveId': objectiveId,
+      'goalId': goalId,
       'description': description,
       'dueDate': dueDate.millisecondsSinceEpoch,
       'value': value,
@@ -75,7 +65,7 @@ class TransactionData extends HiveObject {
       walletId: map['walletId'],
       transactionType: map['transactionType'],
       categoryId: map['categoryId'],
-      objectiveId: map['objectiveId'],
+      goalId: map['goalId'],
       description: map['description'],
       dueDate: DateTime.fromMillisecondsSinceEpoch(map['dueDate']),
       value: map['value'],
@@ -92,7 +82,7 @@ class TransactionData extends HiveObject {
     return "TransactionData(walletId: $walletId, "
         "transactionType: ${TransactionType.values[transactionType]}, "
         "categoryId: $categoryId, "
-        "objectiveId: $objectiveId, "
+        "goalId: $goalId, "
         "description: $description, "
         "dueDate: $dueDate, "
         "value: $value, "
