@@ -29,14 +29,11 @@ class _HomePageState extends State<HomePage> {
         child: ListView(
           padding: EdgeInsets.zero,
           children: <Widget>[
-            const DrawerHeader(
-              decoration: BoxDecoration(color: Colors.blue),
+            DrawerHeader(
+              decoration: BoxDecoration(color: Theme.of(context).colorScheme.primary),
               child: Text(
-                'Drawer Header',
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 24,
-                ),
+                'Organeasy',
+                style: TextStyle(color: Colors.white, fontSize: 24),
               ),
             ),
             ListTile(

@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
+import 'package:organeasy/common_widgets/progress_loading.dart';
 import 'package:organeasy/presentation/new_transaction/cubit/new_transaction_cubit.dart';
 import 'package:organeasy/presentation/new_transaction/views/category_dropdown.dart';
 import 'package:organeasy/presentation/new_transaction/views/description_field.dart';
@@ -58,10 +59,10 @@ class _NewTransactionPageState extends State<NewTransactionPage> {
           body: BlocBuilder<NewTransactionCubit, NewTransactionState>(
             builder: (ctx, state) {
               if (state is LoadingScreen) {
-                return Center(child: CircularProgressIndicator());
+                return Center(child: ProgressLoading(loadingDescription: "Carregando..."));
               }
 
-              return Padding(
+              return SingleChildScrollView(
                 padding: const EdgeInsets.all(16.0),
                 child: Form(
                   key: _formKey,
@@ -129,28 +130,22 @@ class _NewTransactionPageState extends State<NewTransactionPage> {
       showDialog(
         context: context,
         builder: (context) => AlertDialog(
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              CircularProgressIndicator(),
-              SizedBox(height: 8),
-              Text("Salvando transação..."),
-            ],
-          ),
+          content: ProgressLoading(loadingDescription: "Salvando transação..."),
         ),
       );
       return;
     }
 
     if (state is TransactionSaved) {
-      // ! TODO: remove dialog, show success, return to screen
       Navigator.pop(context);
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Transação criada com sucesso!")));
+      Navigator.pop(context, true);
       return;
     }
 
     if (state is TransactionError) {
-      // ! TODO: remove dialog, show error
+      Navigator.pop(context);
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Erro ao criar transação!")));
       return;
     }
   }
@@ -175,7 +170,8 @@ class _NewTransactionPageState extends State<NewTransactionPage> {
       context: context,
       initialEntryMode: DatePickerEntryMode.calendarOnly,
       initialDate: DateTime.now(),
-      firstDate: DateTime(2015, 1, 1), // ! TODO: INITIAL AND LAST TIME??
+      firstDate: DateTime(2015, 1, 1),
+      // ! TODO: INITIAL AND LAST TIME??
       lastDate: DateTime(2030, 1, 1),
     );
 

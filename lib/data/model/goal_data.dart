@@ -1,10 +1,22 @@
 import 'package:hive/hive.dart';
 
+part 'goal_data.g.dart';
+
+@HiveType(typeId: 1)
 class GoalData extends HiveObject {
+  @HiveField(0)
   final int id;
+
+  @HiveField(1)
   final String description;
+
+  @HiveField(2)
   final DateTime dueDate; // ! TODO: or String parsed
+
+  @HiveField(3)
   final double goalValue;
+
+  @HiveField(4)
   final double currentValue;
 
   GoalData({

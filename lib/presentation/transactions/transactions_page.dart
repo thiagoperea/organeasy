@@ -1,90 +1,109 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/painting.dart';
 import 'package:flutter/widgets.dart';
-import 'package:intl/intl.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:organeasy/common_widgets/progress_loading.dart';
+import 'package:organeasy/data/model/category_data.dart';
 import 'package:organeasy/data/model/transaction_data.dart';
 import 'package:organeasy/presentation/new_transaction/new_transaction_page.dart';
+import 'package:organeasy/presentation/transactions/cubit/transactions_cubit.dart';
+import 'package:organeasy/presentation/transactions/views/transaction_item.dart';
 
-class TransactionsPage extends StatelessWidget {
-  TransactionsPage({Key? key}) : super(key: key);
+class TransactionsPage extends StatefulWidget {
+  const TransactionsPage({Key? key}) : super(key: key);
 
-  final List<TransactionData> _mockItems = [
-    TransactionData(
-      walletId: 0,
-      transactionType: TransactionType.receive.index,
-      categoryId: 0,
-      description: "Teste",
-      dueDate: DateTime.now(),
-      value: 100.0,
-      isDone: true,
-    ),
-    TransactionData(
-        walletId: 0,
-        transactionType: TransactionType.pay.index,
-        categoryId: 1,
-        description: "Teste ontem",
-        dueDate: DateTime.now().add(Duration(days: -1)),
-        value: 200.0,
-        isDone: false),
-    TransactionData(
-      walletId: 0,
-      transactionType: TransactionType.save.index,
-      categoryId: 2,
-      description: "Teste poup",
-      dueDate: DateTime.now(),
-      value: 50.0,
-      isDone: true,
-    ),
-  ];
+  @override
+  State<TransactionsPage> createState() => _TransactionsPageState();
+}
+
+class _TransactionsPageState extends State<TransactionsPage> {
+  final TransactionsCubit _cubit = TransactionsCubit();
+  late String _monthDescription;
+
+  @override
+  void initState() {
+    _cubit.loadTransactions();
+    _monthDescription = _cubit.getMonthFormatted();
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Column(
-        mainAxisSize: MainAxisSize.max,
-        children: [
-          Container(
-            padding: EdgeInsets.all(8),
-            alignment: Alignment.center,
-            width: double.maxFinite,
-            color: Colors.amber,
-            child: Text(
-              "FILTER VIEW!!!",
-              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+    return BlocProvider<TransactionsCubit>(
+      create: (context) => _cubit,
+      child: Scaffold(
+        body: Column(
+          mainAxisSize: MainAxisSize.max,
+          children: [
+            SizedBox(height: 8),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                IconButton(
+                    icon: Icon(Icons.arrow_back_ios_rounded),
+                    onPressed: () {
+                      _cubit.setPreviousMonth();
+                      setState(() {
+                        _monthDescription = _cubit.getMonthFormatted();
+                      });
+                    }),
+                Text(_monthDescription, style: TextStyle(fontSize: 18.0)),
+                IconButton(
+                    icon: Icon(Icons.arrow_forward_ios_rounded),
+                    onPressed: () {
+                      _cubit.setNextMonth();
+                      setState(() {
+                        _monthDescription = _cubit.getMonthFormatted();
+                      });
+                    }),
+              ],
             ),
-          ),
-          Expanded(
-            child: ListView.builder(
-              itemCount: _mockItems.length,
-              itemBuilder: (context, idx) => _TransactionItem(
-                data: _mockItems[idx],
-                isFirst: idx == 0,
-                isLast: idx == (_mockItems.length - 1),
+            Divider(),
+            Expanded(
+              child: BlocBuilder<TransactionsCubit, TransactionsState>(
+                builder: (context, state) {
+                  if (state is TransactionsLoading) {
+                    return Center(
+                      child: ProgressLoading(loadingDescription: "Carregando..."),
+                    );
+                  }
+
+                  if (state is TransactionsLoaded) {
+                    return _TransactionList(dataset: state.dataset);
+                  }
+
+                  if (state is TransactionsError) {
+                    return Center(
+                      child: Container(width: 50, height: 50, color: Colors.red),
+                    );
+                  }
+
+                  return Container();
+                },
               ),
             ),
-          ),
-        ],
-      ),
-      floatingActionButton: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          FloatingActionButton(
-            heroTag: 0,
-            onPressed: () {},
-            child: Icon(Icons.playlist_add_rounded),
-            mini: true,
-            tooltip: "Add Multiple",
-          ),
-          SizedBox(height: 8),
-          FloatingActionButton(
-            heroTag: 1,
-            onPressed: () => _onAddSingleClick(context),
-            child: Icon(Icons.add_rounded),
-            mini: true,
-            tooltip: "Add single",
-          ),
-        ],
+          ],
+        ),
+        floatingActionButton: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            FloatingActionButton(
+              heroTag: 0,
+              onPressed: () {},
+              child: Icon(Icons.playlist_add_rounded),
+              mini: true,
+              tooltip: "Add Multiple",
+            ),
+            SizedBox(height: 8),
+            FloatingActionButton(
+              heroTag: 1,
+              onPressed: () => _onAddSingleClick(context),
+              child: Icon(Icons.add_rounded),
+              mini: true,
+              tooltip: "Add single",
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -93,111 +112,44 @@ class TransactionsPage extends StatelessWidget {
     bool wasCreated = await Navigator.of(context).push<bool>(MaterialPageRoute(builder: (_) => NewTransactionPage())) ?? false;
 
     if (wasCreated) {
-      // ! TODO: call cubit to update screen
+      _cubit.loadTransactions();
     }
   }
 }
 
-class _TransactionItem extends StatelessWidget {
-  final TransactionData data;
-  final bool isFirst;
-  final bool isLast;
+class _TransactionList extends StatelessWidget {
+  final List<TransactionData> dataset;
 
-  const _TransactionItem({Key? key, required this.data, this.isFirst = false, this.isLast = false}) : super(key: key);
+  const _TransactionList({Key? key, required this.dataset}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return Material(
-      child: InkWell(
-        onTap: () {
-          print("CLICKED ON $data");
+    if (dataset.isEmpty) {
+      return Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(Icons.warning),
+          Text("Nenhuma transação!"),
+        ],
+      );
+    }
+
+    return RefreshIndicator(
+      child: ListView.builder(
+        itemCount: dataset.length,
+        itemBuilder: (context, idx) {
+          final TransactionData _item = dataset[idx];
+          final CategoryData _category = context.read<TransactionsCubit>().getCategory(_item.categoryId);
+
+          return TransactionItem(
+            transaction: _item,
+            category: _category,
+            isFirst: idx == 0,
+            isLast: idx == (dataset.length - 1),
+          );
         },
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            SizedBox(width: 16),
-            _timelineView(context, isFirst, isLast, data.isDone),
-            SizedBox(width: 16),
-            _descriptionView(data),
-            SizedBox(width: 16),
-            Expanded(
-              child: Text(
-                NumberFormat.simpleCurrency().format(data.value),
-                textAlign: TextAlign.end,
-                style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ),
-            SizedBox(width: 16),
-          ],
-        ),
       ),
-    );
-  }
-
-  Widget _timelineView(BuildContext context, bool isFirst, bool isLast, bool isDone) {
-    final Color lineColor = Theme.of(context).colorScheme.onSurface.withOpacity(0.35);
-    final Color dotColor = isDone ? Colors.green : Colors.red;
-    final Color firstColor = isFirst ? Colors.transparent : lineColor;
-    final Color lastColor = isLast ? Colors.transparent : lineColor;
-
-    return Column(
-      children: [
-        Container(
-          width: 1,
-          height: 48,
-          color: firstColor,
-        ),
-        Container(
-          width: 10,
-          height: 10,
-          decoration: ShapeDecoration(
-            shape: CircleBorder(),
-            color: dotColor,
-          ),
-        ),
-        Container(
-          width: 1,
-          height: 48,
-          color: lastColor,
-        ),
-      ],
-    );
-  }
-
-  Widget _descriptionView(TransactionData data) {
-    String dueDate = DateFormat("dd/MM").format(data.dueDate);
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          dueDate,
-          style: TextStyle(
-            fontWeight: FontWeight.bold,
-            fontSize: 14,
-          ),
-        ),
-        SizedBox(height: 4),
-        Text(
-          data.description,
-          style: TextStyle(fontSize: 16),
-        ),
-        SizedBox(height: 4),
-        Container(
-          padding: EdgeInsets.fromLTRB(8, 4, 8, 4),
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.all(Radius.circular(16)),
-            color: Colors.green.shade300,
-          ),
-          child: Text(
-            "Pagamentos", // ! TODO
-            style: TextStyle(fontSize: 12),
-          ),
-        ),
-      ],
+      onRefresh: () => context.read<TransactionsCubit>().loadTransactions(),
     );
   }
 }

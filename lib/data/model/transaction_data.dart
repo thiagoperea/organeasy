@@ -2,16 +2,32 @@ import 'dart:convert';
 
 import 'package:hive/hive.dart';
 
-class TransactionData extends HiveObject {
+part 'transaction_data.g.dart';
 
+@HiveType(typeId: 0)
+class TransactionData extends HiveObject {
+  @HiveField(0)
   final int walletId;
-  
+
+  @HiveField(1)
   final int transactionType;
+
+  @HiveField(2)
   final int categoryId;
+
+  @HiveField(3)
   final int? goalId;
+
+  @HiveField(4)
   final String description;
+
+  @HiveField(5)
   final DateTime dueDate;
+
+  @HiveField(6)
   final double value;
+
+  @HiveField(7)
   final bool isDone;
 
   TransactionData({
