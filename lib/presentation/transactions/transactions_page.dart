@@ -35,7 +35,7 @@ class _TransactionsPageState extends State<TransactionsPage> {
             return Column(
               mainAxisSize: MainAxisSize.max,
               children: [
-                SizedBox(height: 8),
+                SizedBox(height: 4),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
@@ -50,7 +50,7 @@ class _TransactionsPageState extends State<TransactionsPage> {
                     ),
                   ],
                 ),
-                Divider(),
+                Divider(height: 4),
                 Expanded(
                   child: Builder(builder: (ctx) {
                     if (state is TransactionsLoading) {
