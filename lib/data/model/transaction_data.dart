@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:hive/hive.dart';
+import 'package:organeasy/data/model/transaction_type.dart';
 
 part 'transaction_data.g.dart';
 
@@ -10,7 +11,7 @@ class TransactionData extends HiveObject {
   final int walletId;
 
   @HiveField(1)
-  final int transactionType;
+  final TransactionType transactionType;
 
   @HiveField(2)
   final int categoryId;
@@ -43,7 +44,7 @@ class TransactionData extends HiveObject {
 
   TransactionData copyWith({
     int? walletId,
-    int? transactionType,
+    TransactionType? transactionType,
     int? categoryId,
     int? goalId,
     String? description,
@@ -96,7 +97,7 @@ class TransactionData extends HiveObject {
   @override
   String toString() {
     return "TransactionData(walletId: $walletId, "
-        "transactionType: ${TransactionType.values[transactionType]}, "
+        "transactionType: $transactionType}, "
         "categoryId: $categoryId, "
         "goalId: $goalId, "
         "description: $description, "
@@ -105,5 +106,3 @@ class TransactionData extends HiveObject {
         "isDone: $isDone)";
   }
 }
-
-enum TransactionType { pay, receive, save }

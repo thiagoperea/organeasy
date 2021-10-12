@@ -18,7 +18,7 @@ class TransactionDataAdapter extends TypeAdapter<TransactionData> {
     };
     return TransactionData(
       walletId: fields[0] as int,
-      transactionType: fields[1] as int,
+      transactionType: fields[1] as TransactionType,
       categoryId: fields[2] as int,
       goalId: fields[3] as int?,
       description: fields[4] as String,

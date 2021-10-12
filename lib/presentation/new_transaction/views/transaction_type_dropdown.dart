@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:organeasy/data/model/transaction_data.dart';
+import 'package:organeasy/data/model/transaction_type.dart';
 
 class TransactionTypeDropdown extends StatefulWidget {
-  final Function(int) onValueChanged;
+  final Function(TransactionType) onValueChanged;
 
   const TransactionTypeDropdown({Key? key, required this.onValueChanged}) : super(key: key);
 
@@ -11,17 +11,17 @@ class TransactionTypeDropdown extends StatefulWidget {
 }
 
 class _TransactionTypeDropdownState extends State<TransactionTypeDropdown> {
-  int _selectedType = 0;
+  TransactionType _selectedType = TransactionType.expense;
 
   final _types = [
-    DropdownMenuItem(value: TransactionType.pay.index, child: Text("Pagar")),
-    DropdownMenuItem(value: TransactionType.receive.index, child: Text("Receber")),
-    DropdownMenuItem(value: TransactionType.save.index, child: Text("Guardar")),
+    DropdownMenuItem(value: TransactionType.expense, child: Text("Pagar")),
+    DropdownMenuItem(value: TransactionType.income, child: Text("Receber")),
+    DropdownMenuItem(value: TransactionType.investment, child: Text("Guardar")),
   ];
 
   @override
   Widget build(BuildContext context) {
-    return DropdownButtonFormField<int>(
+    return DropdownButtonFormField<TransactionType>(
       decoration: InputDecoration(
         labelText: "Categoria",
         hintText: "Selecione a categoria",

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:intl/intl.dart';
 import 'package:organeasy/data/model/category_data.dart';
 import 'package:organeasy/data/model/transaction_data.dart';
@@ -51,21 +52,16 @@ class _TimelineView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final Color lineColor = Theme.of(context).colorScheme.onSurface.withOpacity(0.35);
-    final Color dotColor = isDone ? Colors.green : Colors.red;
+
     final Color firstColor = isFirst ? Colors.transparent : lineColor;
+    final IconData indicatorIcon = isDone ? FontAwesomeIcons.solidCheckCircle : FontAwesomeIcons.exclamationCircle;
+    final Color indicatorColor = isDone ? Colors.green : Colors.red;
     final Color lastColor = isLast ? Colors.transparent : lineColor;
 
     return Column(
       children: [
         Container(width: 1, height: 48, color: firstColor),
-        Container(
-          width: 10,
-          height: 10,
-          decoration: ShapeDecoration(
-            shape: CircleBorder(),
-            color: dotColor,
-          ),
-        ),
+        FaIcon(indicatorIcon, color: indicatorColor, size: 20),
         Container(width: 1, height: 48, color: lastColor),
       ],
     );

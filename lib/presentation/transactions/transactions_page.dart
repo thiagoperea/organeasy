@@ -18,12 +18,10 @@ class TransactionsPage extends StatefulWidget {
 
 class _TransactionsPageState extends State<TransactionsPage> {
   final TransactionsCubit _cubit = TransactionsCubit();
-  late String _monthDescription;
 
   @override
   void initState() {
     _cubit.loadTransactions();
-    _monthDescription = _cubit.getMonthFormatted();
     super.initState();
   }
 
@@ -32,57 +30,51 @@ class _TransactionsPageState extends State<TransactionsPage> {
     return BlocProvider<TransactionsCubit>(
       create: (context) => _cubit,
       child: Scaffold(
-        body: Column(
-          mainAxisSize: MainAxisSize.max,
-          children: [
-            SizedBox(height: 8),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
+        body: BlocBuilder<TransactionsCubit, TransactionsState>(
+          builder: (context, state) {
+            return Column(
+              mainAxisSize: MainAxisSize.max,
               children: [
-                IconButton(
-                    icon: Icon(Icons.arrow_back_ios_rounded),
-                    onPressed: () {
-                      _cubit.setPreviousMonth();
-                      setState(() {
-                        _monthDescription = _cubit.getMonthFormatted();
-                      });
-                    }),
-                Text(_monthDescription, style: TextStyle(fontSize: 18.0)),
-                IconButton(
-                    icon: Icon(Icons.arrow_forward_ios_rounded),
-                    onPressed: () {
-                      _cubit.setNextMonth();
-                      setState(() {
-                        _monthDescription = _cubit.getMonthFormatted();
-                      });
-                    }),
+                SizedBox(height: 8),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    IconButton(
+                      icon: Icon(Icons.arrow_back_ios_rounded),
+                      onPressed: state is TransactionsLoading ? null : () => _cubit.setPreviousMonth(),
+                    ),
+                    Text(state.selectedMonth, style: TextStyle(fontSize: 18.0)),
+                    IconButton(
+                      icon: Icon(Icons.arrow_forward_ios_rounded),
+                      onPressed: state is TransactionsLoading ? null : () => _cubit.setNextMonth(),
+                    ),
+                  ],
+                ),
+                Divider(),
+                Expanded(
+                  child: Builder(builder: (ctx) {
+                    if (state is TransactionsLoading) {
+                      return Center(
+                        child: ProgressLoading(loadingDescription: "Carregando..."),
+                      );
+                    }
+
+                    if (state is TransactionsLoaded) {
+                      return _TransactionList(dataset: state.dataset);
+                    }
+
+                    if (state is TransactionsError) {
+                      return Center(
+                        child: Container(width: 50, height: 50, color: Colors.red),
+                      );
+                    }
+
+                    return Container();
+                  }),
+                )
               ],
-            ),
-            Divider(),
-            Expanded(
-              child: BlocBuilder<TransactionsCubit, TransactionsState>(
-                builder: (context, state) {
-                  if (state is TransactionsLoading) {
-                    return Center(
-                      child: ProgressLoading(loadingDescription: "Carregando..."),
-                    );
-                  }
-
-                  if (state is TransactionsLoaded) {
-                    return _TransactionList(dataset: state.dataset);
-                  }
-
-                  if (state is TransactionsError) {
-                    return Center(
-                      child: Container(width: 50, height: 50, color: Colors.red),
-                    );
-                  }
-
-                  return Container();
-                },
-              ),
-            ),
-          ],
+            );
+          },
         ),
         floatingActionButton: Column(
           mainAxisSize: MainAxisSize.min,

@@ -15,7 +15,7 @@ class TransactionsCubit extends Cubit<TransactionsState> {
   List<CategoryData> _categoryList = List.empty(growable: false);
   DateTime _monthSelected = DateTime.now();
 
-  TransactionsCubit() : super(TransactionsLoading()) {
+  TransactionsCubit() : super(TransactionsLoading(DateFormat.yM().format(DateTime.now()))) {
     _loadCategoryList();
   }
 
@@ -26,20 +26,14 @@ class TransactionsCubit extends Cubit<TransactionsState> {
 
   /// Load all transactions from the selected month.
   Future<void> loadTransactions() async {
-    if (state is TransactionsLoading) {
-      ///TODO: HERE IS A CONCURRENCY PROBLEM
-      /// IF A CALL IS ALREADY RUNNING, WHAT SHOULD I DO????
-      /// TODO: ^
-    }
-
-    emit(TransactionsLoading());
+    emit(TransactionsLoading(getMonthFormatted()));
 
     try {
       List<TransactionData> _dataset = await _transactionRepository.getTransactionsFromMonth(_monthSelected);
-      emit(TransactionsLoaded(_dataset));
+      emit(TransactionsLoaded(getMonthFormatted(), _dataset));
     } on Exception catch (error) {
       //TODO: logError(error)
-      emit(TransactionsError());
+      emit(TransactionsError(getMonthFormatted()));
     }
   }
 

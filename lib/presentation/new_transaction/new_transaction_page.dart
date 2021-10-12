@@ -4,6 +4,7 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 import 'package:organeasy/common_widgets/progress_loading.dart';
+import 'package:organeasy/data/model/transaction_type.dart';
 import 'package:organeasy/presentation/new_transaction/cubit/new_transaction_cubit.dart';
 import 'package:organeasy/presentation/new_transaction/views/category_dropdown.dart';
 import 'package:organeasy/presentation/new_transaction/views/description_field.dart';
@@ -29,7 +30,7 @@ class _NewTransactionPageState extends State<NewTransactionPage> {
     super.initState();
   }
 
-  int _transactionType = 0;
+  TransactionType _transactionType = TransactionType.expense;
   int _categorySelected = 0;
   bool _isGoalSelected = false;
   int? _goalSelected;
@@ -187,7 +188,7 @@ class _NewTransactionPageState extends State<NewTransactionPage> {
 
     if (isValid != null && isValid == true) {
       _cubit.saveTransaction(
-        transactionTypeId: _transactionType,
+        transactionType: _transactionType,
         categoryId: _categorySelected,
         goalId: _goalSelected,
         description: _descriptionController.text,

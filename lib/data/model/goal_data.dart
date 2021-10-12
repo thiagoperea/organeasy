@@ -11,7 +11,7 @@ class GoalData extends HiveObject {
   final String description;
 
   @HiveField(2)
-  final DateTime dueDate; // ! TODO: or String parsed
+  final DateTime dueDate;
 
   @HiveField(3)
   final double goalValue;

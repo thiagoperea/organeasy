@@ -4,6 +4,7 @@ import 'package:meta/meta.dart';
 import 'package:organeasy/data/model/category_data.dart';
 import 'package:organeasy/data/model/goal_data.dart';
 import 'package:organeasy/data/model/transaction_data.dart';
+import 'package:organeasy/data/model/transaction_type.dart';
 import 'package:organeasy/data/repository/category_repository.dart';
 import 'package:organeasy/data/repository/goal_repository.dart';
 import 'package:organeasy/data/repository/transaction_repository.dart';
@@ -26,14 +27,13 @@ class NewTransactionCubit extends Cubit<NewTransactionState> {
     emit(LoadingScreen());
 
     categoryList.addAll(await _categoryRepository.getCategoryList());
-
     goalsList.addAll(await _goalRepository.getGoalList());
 
     emit(ScreenLoaded());
   }
 
   Future<void> saveTransaction({
-    required int transactionTypeId,
+    required TransactionType transactionType,
     required int categoryId,
     int? goalId,
     required String description,
@@ -44,8 +44,9 @@ class NewTransactionCubit extends Cubit<NewTransactionState> {
     emit(SavingTransaction());
 
     final transaction = TransactionData(
-      walletId: 0, // ! TODO: will I control more than one wallet?
-      transactionType: transactionTypeId,
+      walletId: 0,
+      // ! TODO: will I control more than one wallet?
+      transactionType: transactionType,
       categoryId: categoryId,
       goalId: goalId,
       description: description,
