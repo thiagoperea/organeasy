@@ -13,5 +13,13 @@ class MonthlyBalanceData {
   @HiveField(2)
   double totalInvestments;
 
-  MonthlyBalanceData({this.totalIncome = 0.0, this.totalExpense = 0.0, this.totalInvestments = 0.0});
+  @HiveField(3)
+  double totalSavings;
+
+  MonthlyBalanceData({
+    this.totalIncome = 0.0,
+    this.totalExpense = 0.0,
+    this.totalInvestments = 0.0,
+    this.totalSavings = 0.0,
+  });
 }

@@ -20,7 +20,7 @@ class SplashCubit extends Cubit<SplashState> {
 
   Future<void> loadResources() async {
     // load database
-    await Hive.initFlutter();
+    await Hive.initFlutter("organeasy.db");
     Hive.registerAdapter(TransactionDataAdapter());
     Hive.registerAdapter(TransactionTypeAdapter());
     Hive.registerAdapter(GoalDataAdapter());

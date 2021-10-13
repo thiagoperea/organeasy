@@ -49,6 +49,9 @@ class TransactionRepository {
       case TransactionType.investment:
         monthlyBalance.totalInvestments += transaction.value;
         break;
+      case TransactionType.savings:
+        monthlyBalance.totalSavings += transaction.value;
+        break;
     }
 
     database.put(periodKey, monthlyBalance);

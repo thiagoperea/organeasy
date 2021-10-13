@@ -11,5 +11,8 @@ enum TransactionType {
   income,
 
   @HiveField(2)
-  investment
+  investment,
+
+  @HiveField(3)
+  savings
 }

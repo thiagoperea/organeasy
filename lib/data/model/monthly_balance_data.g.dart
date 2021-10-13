@@ -20,19 +20,22 @@ class MonthlyBalanceDataAdapter extends TypeAdapter<MonthlyBalanceData> {
       totalIncome: fields[0] as double,
       totalExpense: fields[1] as double,
       totalInvestments: fields[2] as double,
+      totalSavings: fields[3] as double,
     );
   }
 
   @override
   void write(BinaryWriter writer, MonthlyBalanceData obj) {
     writer
-      ..writeByte(3)
+      ..writeByte(4)
       ..writeByte(0)
       ..write(obj.totalIncome)
       ..writeByte(1)
       ..write(obj.totalExpense)
       ..writeByte(2)
-      ..write(obj.totalInvestments);
+      ..write(obj.totalInvestments)
+      ..writeByte(3)
+      ..write(obj.totalSavings);
   }
 
   @override

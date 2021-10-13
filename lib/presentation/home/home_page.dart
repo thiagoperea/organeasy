@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:organeasy/presentation/dashboard/dashboard_page.dart';
+import 'package:organeasy/presentation/goals/goals_page.dart';
+import 'package:organeasy/presentation/investments/investments_page.dart';
 import 'package:organeasy/presentation/settings/settings_page.dart';
 import 'package:organeasy/presentation/transactions/transactions_page.dart';
 
@@ -13,11 +16,19 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   int _pageIndex = 0;
 
-  final List<String> _pageTitles = ["Dashboard", "Transactions", "Settings"];
+  final List<String> _pageTitles = [
+    "Resumo",
+    "Transações",
+    "Metas e Objetivos",
+    "Investimentos",
+    "Configurações",
+  ];
 
   final List<Widget> _appPages = [
     const DashboardPage(),
-    TransactionsPage(),
+    const TransactionsPage(),
+    const GoalsPage(),
+    const InvestmentsPage(),
     const SettingsPage(),
   ];
 
@@ -42,14 +53,24 @@ class _HomePageState extends State<HomePage> {
               onTap: () => _onDrawerTap(0),
             ),
             ListTile(
-              leading: const Icon(Icons.playlist_add_rounded),
+              leading: const FaIcon(FontAwesomeIcons.listAlt),
               title: Text(_pageTitles[1]),
               onTap: () => _onDrawerTap(1),
             ),
             ListTile(
-              leading: const Icon(Icons.settings),
+              leading: const FaIcon(FontAwesomeIcons.bullseye),
               title: Text(_pageTitles[2]),
               onTap: () => _onDrawerTap(2),
+            ),
+            ListTile(
+              leading: const FaIcon(FontAwesomeIcons.seedling),
+              title: Text(_pageTitles[3]),
+              onTap: () => _onDrawerTap(3),
+            ),
+            ListTile(
+              leading: const FaIcon(FontAwesomeIcons.userCog),
+              title: Text(_pageTitles[4]),
+              onTap: () => _onDrawerTap(4),
             ),
           ],
         ),
