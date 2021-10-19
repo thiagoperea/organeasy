@@ -6,7 +6,9 @@ import 'package:organeasy/common_widgets/progress_loading.dart';
 import 'package:organeasy/presentation/home/cubit/home_cubit.dart';
 import 'package:organeasy/presentation/home/cubit/home_state.dart';
 import 'package:organeasy/presentation/new_transaction/new_transaction_page.dart';
-import 'package:organeasy/presentation/transactions/cubit/transactions_cubit.dart';
+import 'package:organeasy/presentation/transactions/cubit/load_monthly_balance_cubit.dart';
+import 'package:organeasy/presentation/transactions/cubit/load_transactions_cubit.dart';
+import 'package:organeasy/presentation/transactions/views/month_balance.dart';
 import 'package:organeasy/presentation/transactions/views/month_header.dart';
 import 'package:organeasy/presentation/transactions/views/transaction_list.dart';
 
@@ -18,19 +20,22 @@ class TransactionsPage extends StatefulWidget {
 }
 
 class _TransactionsPageState extends State<TransactionsPage> {
-  final TransactionsCubit _cubit = TransactionsCubit();
-  bool _showDetails = false;
+  final LoadTransactionsCubit _loadTransactionsCubit = LoadTransactionsCubit(); //TODO: should I have this "load" prefix??
+  final LoadMonthlyBalanceCubit _loadMonthlyBalanceCubit = LoadMonthlyBalanceCubit();
 
   @override
   void initState() {
-    _cubit.loadTransactions();
+    _loadTransactionsCubit.loadTransactions();
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider<TransactionsCubit>(
-      create: (context) => _cubit,
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider(create: (_) => _loadTransactionsCubit),
+        BlocProvider(create: (_) => _loadMonthlyBalanceCubit),
+      ],
       child: BlocListener<HomeCubit, HomeState>(
         listener: (context, state) {
           if (state is HomeActionMenuPressed && state.action == HomeActions.screenHelp) {
@@ -43,46 +48,27 @@ class _TransactionsPageState extends State<TransactionsPage> {
             children: [
               SizedBox(height: 8),
               MonthHeader(
-                onInfoClick: () {
-                  setState(() {
-                    _showDetails = !_showDetails;
-                  });
-                },
+                onPreviousClick: () => _onPreviousMonthClick(),
+                onNextClick: () => _onNextMonthClick(),
+                onInfoClick: () => onMonthBalanceClick(),
               ),
               Divider(),
-              Visibility(
-                visible: _showDetails,
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text("Saldo receitas: 11111"),
-                    Text("Saldo despesas: 22222"),
-                    Text("Saldo poupança: 33333"),
-                    Text("Saldo investimentos: 44444"),
-                    Divider(),
-                  ],
-                ),
-              ),
+              MonthBalance(),
               Expanded(
-                child: BlocBuilder<TransactionsCubit, TransactionsState>(
+                child: BlocBuilder<LoadTransactionsCubit, LoadTransactionsState>(
                   builder: (context, state) {
-                    if (state is TransactionsLoading) {
-                      return Center(
-                        child: ProgressLoading(loadingDescription: "Carregando..."),
-                      );
+                    switch (state.state) {
+                      case LoadTransactionsStates.loading:
+                        return Center(
+                          child: ProgressLoading(loadingDescription: "Carregando..."),
+                        );
+                      case LoadTransactionsStates.success:
+                        return TransactionList(dataset: state.dataset!);
+                      case LoadTransactionsStates.error:
+                        return Center(
+                          child: Container(width: 50, height: 50, color: Colors.red), //TODO!
+                        );
                     }
-                    if (state is TransactionsLoaded) {
-                      return TransactionList(dataset: state.dataset);
-                    }
-
-                    if (state is TransactionsError) {
-                      return Center(
-                        child: Container(width: 50, height: 50, color: Colors.red),
-                      );
-                    }
-
-                    return Container();
                   },
                 ),
               )
@@ -93,7 +79,7 @@ class _TransactionsPageState extends State<TransactionsPage> {
             children: [
               FloatingActionButton(
                 heroTag: 0,
-                onPressed: () {},
+                onPressed: () => _onAddMultipleClick(context),
                 child: Icon(Icons.playlist_add_rounded),
                 mini: true,
                 tooltip: "Add Multiple",
@@ -117,7 +103,29 @@ class _TransactionsPageState extends State<TransactionsPage> {
     bool wasCreated = await Navigator.of(context).push<bool>(MaterialPageRoute(builder: (_) => NewTransactionPage())) ?? false;
 
     if (wasCreated) {
-      _cubit.loadTransactions();
+      _loadTransactionsCubit.loadTransactions();
     }
+  }
+
+  void _onPreviousMonthClick() {
+    _loadTransactionsCubit.setPreviousMonth();
+    DateTime monthSelected = _loadTransactionsCubit.monthSelected;
+    _loadMonthlyBalanceCubit.refreshExpanded(monthSelected);
+  }
+
+  void _onNextMonthClick() {
+    _loadTransactionsCubit.setNextMonth();
+    DateTime monthSelected = _loadTransactionsCubit.monthSelected;
+    _loadMonthlyBalanceCubit.refreshExpanded(monthSelected);
+  }
+
+  void onMonthBalanceClick() {
+    DateTime monthSelected = _loadTransactionsCubit.monthSelected;
+    _loadMonthlyBalanceCubit.expandOrCollapse(monthSelected);
+  }
+
+  void _onAddMultipleClick(BuildContext context) {
+    //TODO
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Falta implementar!")));
   }
 }

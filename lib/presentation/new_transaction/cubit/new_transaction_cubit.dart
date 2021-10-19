@@ -13,7 +13,6 @@ import 'package:organeasy/internal/string_extensions.dart';
 part 'new_transaction_state.dart';
 
 class NewTransactionCubit extends Cubit<NewTransactionState> {
-
   final TransactionRepository _transactionRepository = TransactionRepository(); // TODO: DI
   final CategoryRepository _categoryRepository = CategoryRepository();
   final GoalRepository _goalRepository = GoalRepository();
@@ -51,7 +50,7 @@ class NewTransactionCubit extends Cubit<NewTransactionState> {
       goalId: goalId,
       description: description,
       dueDate: DateFormat.yMd().parse(dueDate),
-      value: StringExtensions.moneyToDouble(totalValue),
+      value: totalValue.toOnlyDigits().toDouble(),
       isDone: isDone,
     );
 

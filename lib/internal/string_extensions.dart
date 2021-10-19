@@ -1,7 +1,5 @@
-class StringExtensions {
-  const StringExtensions._();
+extension StringExtensions on String {
+  String toOnlyDigits() => this.replaceAll(RegExp(r"[^0-9]"), "");
 
-  static String getOnlyDigits(String value) => value.replaceAll(RegExp(r"[^0-9]"), "");
-
-  static double moneyToDouble(String value) => (double.tryParse(getOnlyDigits(value)) ?? 0.0) / 100;
+  double toDouble() => (double.tryParse(this) ?? 0.0) / 100;
 }

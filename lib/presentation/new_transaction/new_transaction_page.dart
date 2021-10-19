@@ -5,6 +5,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 import 'package:organeasy/common_widgets/progress_loading.dart';
 import 'package:organeasy/data/model/transaction_type.dart';
+import 'package:organeasy/internal/double_extensions.dart';
 import 'package:organeasy/presentation/new_transaction/cubit/new_transaction_cubit.dart';
 import 'package:organeasy/presentation/new_transaction/views/category_dropdown.dart';
 import 'package:organeasy/presentation/new_transaction/views/description_field.dart';
@@ -38,7 +39,7 @@ class _NewTransactionPageState extends State<NewTransactionPage> {
 
   final TextEditingController _descriptionController = TextEditingController();
   final TextEditingController _dateController = TextEditingController(text: DateFormat.yMd().format(DateTime.now()));
-  final TextEditingController _valueController = TextEditingController(text: NumberFormat.simpleCurrency().format(0.0));
+  final TextEditingController _valueController = TextEditingController(text: (0.0).toMonetary());
   final _formKey = GlobalKey<FormState>();
 
   @override

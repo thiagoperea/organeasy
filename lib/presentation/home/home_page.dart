@@ -15,7 +15,7 @@ class HomePage extends StatefulWidget {
   final List<String> _appTitles = const [
     "Resumo",
     "Transações",
-    "Metas e Objetivos",
+    "Metas",
     "Investimentos",
     "Configurações",
   ];

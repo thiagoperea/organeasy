@@ -3,6 +3,7 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:intl/intl.dart';
 import 'package:organeasy/data/model/category_data.dart';
 import 'package:organeasy/data/model/transaction_data.dart';
+import 'package:organeasy/internal/double_extensions.dart';
 
 class TransactionItem extends StatelessWidget {
   final TransactionData transaction;
@@ -29,7 +30,7 @@ class TransactionItem extends StatelessWidget {
             SizedBox(width: 16),
             Expanded(
               child: Text(
-                NumberFormat.simpleCurrency().format(transaction.value),
+                transaction.value.toMonetary(),
                 textAlign: TextAlign.end,
                 style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
               ),

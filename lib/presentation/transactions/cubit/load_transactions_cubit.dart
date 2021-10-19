@@ -1,21 +1,24 @@
 import 'package:bloc/bloc.dart';
 import 'package:intl/intl.dart';
-import 'package:meta/meta.dart';
 import 'package:organeasy/data/model/category_data.dart';
 import 'package:organeasy/data/model/transaction_data.dart';
 import 'package:organeasy/data/repository/category_repository.dart';
 import 'package:organeasy/data/repository/transaction_repository.dart';
 
-part 'transactions_state.dart';
+part 'load_transactions_state.dart';
 
-class TransactionsCubit extends Cubit<TransactionsState> {
+class LoadTransactionsCubit extends Cubit<LoadTransactionsState> {
   final TransactionRepository _transactionRepository = TransactionRepository();
   final CategoryRepository _categoryRepository = CategoryRepository();
 
   List<CategoryData> _categoryList = List.empty(growable: false);
-  DateTime _monthSelected = DateTime.now();
+  DateTime monthSelected = DateTime.now();
 
-  TransactionsCubit() : super(TransactionsLoading(DateFormat.yM().format(DateTime.now()))) {
+  LoadTransactionsCubit()
+      : super(LoadTransactionsState(
+          state: LoadTransactionsStates.loading,
+          selectedMonth: DateFormat.yM().format(DateTime.now()),
+        )) {
     _loadCategoryList();
   }
 
@@ -26,14 +29,24 @@ class TransactionsCubit extends Cubit<TransactionsState> {
 
   /// Load all transactions from the selected month.
   Future<void> loadTransactions() async {
-    emit(TransactionsLoading(getMonthFormatted()));
+    emit(state.copyWith(
+      state: LoadTransactionsStates.loading,
+      selectedMonth: getMonthFormatted(),
+    ));
 
     try {
-      List<TransactionData> _dataset = await _transactionRepository.getTransactionsFromMonth(_monthSelected);
-      emit(TransactionsLoaded(getMonthFormatted(), _dataset));
+      List<TransactionData> _dataset = await _transactionRepository.getTransactionsFromMonth(monthSelected);
+
+      emit(state.copyWith(
+        state: LoadTransactionsStates.success,
+        dataset: _dataset,
+      ));
     } on Exception catch (error) {
       //TODO: logError(error)
-      emit(TransactionsError(getMonthFormatted()));
+      emit(state.copyWith(
+        state: LoadTransactionsStates.error,
+        errorMessage: error.toString(),
+      ));
     }
   }
 
@@ -41,14 +54,14 @@ class TransactionsCubit extends Cubit<TransactionsState> {
   CategoryData getCategory(int categoryId) => _categoryList.firstWhere((element) => element.id == categoryId);
 
   void setPreviousMonth() {
-    _monthSelected = DateTime(_monthSelected.year, _monthSelected.month - 1, _monthSelected.day);
+    monthSelected = DateTime(monthSelected.year, monthSelected.month - 1, monthSelected.day);
     loadTransactions();
   }
 
   void setNextMonth() {
-    _monthSelected = DateTime(_monthSelected.year, _monthSelected.month + 1, _monthSelected.day);
+    monthSelected = DateTime(monthSelected.year, monthSelected.month + 1, monthSelected.day);
     loadTransactions();
   }
 
-  String getMonthFormatted() => DateFormat.yM().format(_monthSelected);
+  String getMonthFormatted() => DateFormat.yM().format(monthSelected);
 }

@@ -20,7 +20,7 @@ class ValueField extends StatelessWidget {
       keyboardType: TextInputType.number,
       inputFormatters: [MoneyMask()],
       validator: (currentValue) {
-        if (currentValue != null && StringExtensions.moneyToDouble(currentValue) == 0.0) {
+        if (currentValue != null && currentValue.toOnlyDigits().toDouble() == 0.0) {
           return "Campo obrigatório";
         }
         return null;

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:organeasy/data/model/category_data.dart';
 import 'package:organeasy/data/model/transaction_data.dart';
-import 'package:organeasy/presentation/transactions/cubit/transactions_cubit.dart';
+import 'package:organeasy/presentation/transactions/cubit/load_transactions_cubit.dart';
 import 'package:organeasy/presentation/transactions/views/transaction_item.dart';
 import 'package:provider/src/provider.dart';
 
@@ -27,7 +27,7 @@ class TransactionList extends StatelessWidget {
         itemCount: dataset.length,
         itemBuilder: (context, idx) {
           final TransactionData _item = dataset[idx];
-          final CategoryData _category = context.read<TransactionsCubit>().getCategory(_item.categoryId);
+          final CategoryData _category = context.read<LoadTransactionsCubit>().getCategory(_item.categoryId);
 
           return TransactionItem(
             transaction: _item,
@@ -37,7 +37,7 @@ class TransactionList extends StatelessWidget {
           );
         },
       ),
-      onRefresh: () => context.read<TransactionsCubit>().loadTransactions(),
+      onRefresh: () => context.read<LoadTransactionsCubit>().loadTransactions(),
     );
   }
 }

@@ -3,10 +3,16 @@ import 'package:organeasy/data/model/monthly_balance_data.dart';
 import 'package:organeasy/data/model/transaction_data.dart';
 import 'package:organeasy/data/model/transaction_type.dart';
 
+///
+/// TODO: try-catch on repository or cubit?
+///
+/// TODO: Create the delete and the update method (Monthly balance)
+///
+
 class TransactionRepository {
   static const String monthlyBalanceBox = "monthly_balance";
 
-  _getTransactionRef(DateTime dueDate) => "${dueDate.month}${dueDate.year}";
+  _getTransactionRef(DateTime date) => "${date.month}${date.year}";
 
   Future<void> addTransaction(TransactionData transaction) async {
     await Future.delayed(Duration(seconds: 1));
@@ -35,6 +41,7 @@ class TransactionRepository {
 
   /// Add the [transaction] to the [periodKey]'s monthly balance.
   Future<void> _addToMonthlyBalance(TransactionData transaction, String periodKey) async {
+    await Future.delayed(Duration(seconds: 1));
     final database = await Hive.openBox<MonthlyBalanceData>(monthlyBalanceBox);
 
     MonthlyBalanceData monthlyBalance = database.get(periodKey, defaultValue: MonthlyBalanceData())!;
@@ -55,9 +62,13 @@ class TransactionRepository {
     }
 
     database.put(periodKey, monthlyBalance);
+  }
 
-    ///
-    /// TODO: Create the delete and the update method;
-    ///
+  Future<MonthlyBalanceData> getMonthlyBalance(DateTime monthSelected) async {
+    await Future.delayed(Duration(seconds: 1));
+    final database = await Hive.openBox<MonthlyBalanceData>(monthlyBalanceBox);
+    final monthKey = _getTransactionRef(monthSelected);
+
+    return database.get(monthKey, defaultValue: MonthlyBalanceData())!;
   }
 }
