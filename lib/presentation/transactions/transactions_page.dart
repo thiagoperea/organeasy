@@ -3,8 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:organeasy/common_widgets/progress_loading.dart';
-import 'package:organeasy/presentation/home/cubit/home_cubit.dart';
-import 'package:organeasy/presentation/home/cubit/home_state.dart';
+import 'package:organeasy/presentation/home/cubit/home_actions_cubit.dart';
+import 'package:organeasy/presentation/home/cubit/home_actions_state.dart';
 import 'package:organeasy/presentation/new_transaction/new_transaction_page.dart';
 import 'package:organeasy/presentation/transactions/cubit/load_monthly_balance_cubit.dart';
 import 'package:organeasy/presentation/transactions/cubit/load_transactions_cubit.dart';
@@ -36,9 +36,9 @@ class _TransactionsPageState extends State<TransactionsPage> {
         BlocProvider(create: (_) => _loadTransactionsCubit),
         BlocProvider(create: (_) => _loadMonthlyBalanceCubit),
       ],
-      child: BlocListener<HomeCubit, HomeState>(
+      child: BlocListener<HomeActionsCubit, HomeActionsState>(
         listener: (context, state) {
-          if (state is HomeActionMenuPressed && state.action == HomeActions.screenHelp) {
+          if (state.action == HomeActions.screenHelp) {
             ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Help clicked!!"))); //TODO: showcase plugin
           }
         },

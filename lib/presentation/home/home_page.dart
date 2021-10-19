@@ -3,8 +3,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:organeasy/presentation/dashboard/dashboard_page.dart';
 import 'package:organeasy/presentation/goals/goals_page.dart';
-import 'package:organeasy/presentation/home/cubit/home_cubit.dart';
-import 'package:organeasy/presentation/home/cubit/home_state.dart';
+import 'package:organeasy/presentation/home/cubit/home_actions_cubit.dart';
+import 'package:organeasy/presentation/home/cubit/home_actions_state.dart';
 import 'package:organeasy/presentation/investments/investments_page.dart';
 import 'package:organeasy/presentation/settings/settings_page.dart';
 import 'package:organeasy/presentation/transactions/transactions_page.dart';
@@ -36,20 +36,20 @@ class _HomePageState extends State<HomePage> {
   late Widget _page;
   late String _title;
   late List<Widget> _actions;
-  late final HomeCubit _cubit;
+  late final HomeActionsCubit _cubit;
 
   @override
   void initState() {
     _page = widget._appPages[0];
     _title = widget._appTitles[0];
     _actions = _getActions(0);
-    _cubit = HomeCubit();
+    _cubit = HomeActionsCubit();
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider<HomeCubit>(
+    return BlocProvider<HomeActionsCubit>(
       create: (_) => _cubit,
       child: Scaffold(
         appBar: AppBar(

@@ -6,10 +6,7 @@ class GoalsPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      color: Colors.green.shade200,
-      child: Center(
-        child: Text("Metas"),
-      ),
+      child: Center(),
     );
   }
 }
